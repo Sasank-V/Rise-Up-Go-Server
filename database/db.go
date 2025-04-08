@@ -80,3 +80,30 @@ func CollectionExist(db *mongo.Database, coll_name string) (bool, error) {
 	}
 	return false, nil
 }
+
+func CreateCollection(db *mongo.Database, coll_name string, coll_schema bson.M, unique_fields []string) error {
+	ctx, cancel := GetContext()
+	defer cancel()
+
+	exists, err := CollectionExist(db, coll_name)
+	if err != nil {
+		return err
+	}
+	if exists {
+		log.Printf(coll_name, " Collection Already Exists , Skipping Creation...\n")
+		return nil
+	}
+
+	validator := bson.M{
+		"$jsonSchema": coll_schema,
+	}
+	opts := options.CreateCollection().SetValidator(validator)
+	err = db.CreateCollection(ctx, coll_name, opts)
+	if err != nil {
+		return err
+	}
+	if err := SetUniqueKeys(db.Collection(coll_name), unique_fields); err != nil {
+		return err
+	}
+	return nil
+}

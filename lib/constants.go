@@ -1,4 +1,10 @@
 package lib
 
-var UserCollectionName = "users"
-var LeanerCollctionName = "learners"
+const (
+	UserCollectionName     = "users"
+	LeanerCollectionName   = "learners"
+	CourseCollectionName   = "courses"
+	ModuleCollectionName   = "modules"
+	LessonCollectionName   = "lessons"
+	ResourceCollectionName = "resources"
+)

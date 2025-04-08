@@ -7,7 +7,14 @@ import (
 	"github.com/Sasank-V/Rise-Up-Go-Server/lib"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.mongodb.org/mongo-driver/v2/mongo/options"
+)
+
+type Role string
+
+const (
+	LearnerRole      Role = "learner"
+	MentorRole       Role = "mentor"
+	OrganisationRole Role = "organisation"
 )
 
 type User struct {
@@ -20,18 +27,6 @@ type User struct {
 }
 
 func CreateUserCollection(db *mongo.Database) {
-	ctx, cancel := database.GetContext()
-	defer cancel()
-
-	exists, err := database.CollectionExist(db, lib.UserCollectionName)
-	if err != nil {
-		log.Fatal("Error checkiing the existing Collection: ", err)
-		return
-	}
-	if exists {
-		log.Printf("User Collection Already Exists, Skipping Creation...\n")
-		return
-	}
 	jsonSchema := bson.M{
 		"bsonType": "object",
 		"required": []string{"google_id", "email", "name", "role"},
@@ -50,23 +45,17 @@ func CreateUserCollection(db *mongo.Database) {
 			},
 			"role": bson.M{
 				"bsonType": "string",
+				"enum":     []string{string(LearnerRole), string(MentorRole), string(OrganisationRole)},
 			},
 			"role_id": bson.M{
 				"bsonType": "string",
 			},
 		},
 	}
-	validator := bson.M{
-		"$jsonSchema": jsonSchema,
-	}
-	opts := options.CreateCollection().SetValidator(validator)
-	err = db.CreateCollection(ctx, lib.UserCollectionName, opts)
+	err := database.CreateCollection(db, lib.UserCollectionName, jsonSchema, []string{"google_id", "email"})
 	if err != nil {
-		log.Fatal("Error creating User Collection ", err)
+		log.Fatal("Error creating user Collection: ", err)
 		return
 	}
-	if err = database.SetUniqueKeys(db.Collection(lib.UserCollectionName), []string{"google_id", "email"}); err != nil {
-		log.Fatal("Error setting up Unique Keys ", err)
-		return
-	}
+	log.Printf("User Collection Created Successfully\n")
 }
