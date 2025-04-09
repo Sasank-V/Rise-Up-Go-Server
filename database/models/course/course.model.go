@@ -26,13 +26,13 @@ type Course struct {
 	Duration    int        `bson:"duration" json:"duration"`
 	Modules     []string   `bson:"modules" json:"modules"`
 	Instructors []string   `bson:"instructors" json:"instructors"`
-	Discussions []string   `bson:"discussion" json:"discussions"`
+	Discussions []string   `bson:"discussions" json:"discussions"`
 }
 
 func CreateCourseCollection(db *mongo.Database) {
 	jsonSchema := bson.M{
 		"bsonType": "object",
-		"required": []string{},
+		"required": []string{"owner", "banner", "title", "difficulty", "description", "duration"},
 		"properties": bson.M{
 			"owner": bson.M{
 				"bsonType": "string",
@@ -77,5 +77,5 @@ func CreateCourseCollection(db *mongo.Database) {
 		log.Fatal("Error Creating Course Collection: ", err)
 		return
 	}
-	log.Printf("Course Collection Created Successfully")
+	log.Printf("Course Collection Exists/Created Successfully")
 }

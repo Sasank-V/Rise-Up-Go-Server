@@ -9,4 +9,8 @@ const (
 	ResourceCollectionName       = "resources"
 	CourseProgressCollectionName = "courseprogresses"
 	JobCollectionName            = "jobs"
+	EducationCollectionName      = "educations"
+	MentorCollectionName         = "mentors"
+	ReviewCollectionName         = "reviews"
+	MentorShipRequestCollection  = "mentorshiprequests"
 )

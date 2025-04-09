@@ -11,10 +11,12 @@ import (
 
 type Learner struct {
 	UserID             string   `bson:"user_id" json:"user_id"`
-	Skills             string   `bson:"skills" json:"skills"`
-	Interests          string   `bson:"interests" json:"interests"`
-	JobPreferences     []string `bson:"job_prefrences" json:"job_preferences"`
+	Skills             []string `bson:"skills" json:"skills"`
+	Interests          []string `bson:"interests" json:"interests"`
+	JobPreferences     []string `bson:"job_preferences" json:"job_preferences"`
 	LanguagePreferred  string   `bson:"language_preferred" json:"language_preferred"`
+	Education          []string `bson:"education" json:"education"`
+	ProfileCompletion  int      `bson:"profile_completion" json:"profile_completion"`
 	EnrolledCourses    []string `bson:"enrolled_courses" json:"enrolled_courses"`
 	AppliedJobs        []string `bson:"applied_jobs" json:"applied_jobs"`
 	TestsTaken         []string `bson:"tests_taken" json:"tests_taken"`
@@ -29,36 +31,50 @@ func CreateLearnerCollection(db *mongo.Database) {
 			"user_id": bson.M{
 				"bsonType": "string",
 			},
+			"skills": bson.M{
+				"bsonType": "array",
+				"items":    bson.M{"bsonType": "string"},
+			},
+			"interests": bson.M{
+				"bsonType": "array",
+				"items":    bson.M{"bsonType": "string"},
+			},
+			"job_preferences": bson.M{
+				"bsonType": "array",
+				"items":    bson.M{"bsonType": "string"},
+			},
+			"language_preferred": bson.M{
+				"bsonType": "string",
+			},
+			"education": bson.M{
+				"bsonType": "array",
+				"items":    bson.M{"bsonType": "string"},
+			},
 			"enrolled_courses": bson.M{
 				"bsonType": "array",
-				"items": bson.M{
-					"bsonType": "string",
-				},
+				"items":    bson.M{"bsonType": "string"},
 			},
 			"applied_jobs": bson.M{
 				"bsonType": "array",
-				"items": bson.M{
-					"bsonType": "string",
-				},
+				"items":    bson.M{"bsonType": "string"},
 			},
 			"tests_taken": bson.M{
 				"bsonType": "array",
-				"items": bson.M{
-					"bsonType": "string",
-				},
+				"items":    bson.M{"bsonType": "string"},
 			},
 			"mentorship_sessions": bson.M{
 				"bsonType": "array",
-				"items": bson.M{
-					"bsonType": "string",
-				},
+				"items":    bson.M{"bsonType": "string"},
+			},
+			"profile_completion": bson.M{
+				"bsonType": "int",
 			},
 		},
 	}
+
 	err := database.CreateCollection(db, lib.LeanerCollectionName, jsonSchema, []string{"user_id"})
 	if err != nil {
 		log.Fatal("Error creating Learner Collection: ", err)
-		return
 	}
-	log.Printf("Learner Collection Created Successfully")
+	log.Printf("Learner Collection Exists/Created Successfully")
 }

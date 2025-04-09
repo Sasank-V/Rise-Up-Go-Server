@@ -1,4 +1,4 @@
-package models
+package course
 
 import (
 	"log"
@@ -43,5 +43,5 @@ func CreateCourseProgressCollection(db *mongo.Database) {
 		log.Fatal("Error Creating Course Progress Collection")
 		return
 	}
-	log.Printf("Course Progress Collection Created Successfully")
+	log.Printf("Course Progress Collection Exists/Created Successfully")
 }

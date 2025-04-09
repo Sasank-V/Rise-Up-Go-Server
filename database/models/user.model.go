@@ -18,15 +18,14 @@ const (
 )
 
 type User struct {
-	GoogleID string   `bson:"google_id" json:"google_id"`
-	Name     string   `bson:"name" json:"name"`
-	Email    string   `bson:"email" json:"email"`
-	Picture  string   `bson:"picture" json:"picture"`
-	Bio      string   `bson:"bio" json:"bio"`
-	Location string   `bson:"location" json:"location"`
-	Role     string   `bson:"role" json:"role"`
-	RoleID   string   `bson:"role_id" json:"role_id"`
-	Reviews  []string `bson:"reviews" json:"reviews"`
+	GoogleID string `bson:"google_id" json:"google_id"`
+	Name     string `bson:"name" json:"name"`
+	Email    string `bson:"email" json:"email"`
+	Picture  string `bson:"picture" json:"picture"`
+	Bio      string `bson:"bio" json:"bio"`
+	Location string `bson:"location" json:"location"`
+	Role     string `bson:"role" json:"role"`
+	RoleID   string `bson:"role_id" json:"role_id"`
 }
 
 func CreateUserCollection(db *mongo.Database) {
@@ -66,5 +65,5 @@ func CreateUserCollection(db *mongo.Database) {
 		log.Fatal("Error creating user Collection: ", err)
 		return
 	}
-	log.Printf("User Collection Created Successfully\n")
+	log.Printf("User Collection Exists/Created Successfully\n")
 }

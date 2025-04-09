@@ -18,7 +18,7 @@ type Resource struct {
 func CreateResourceCollection(db *mongo.Database) {
 	jsonSchema := bson.M{
 		"bsonType": "object",
-		"required": []string{"lesson_id"},
+		"required": []string{"lesson_id", "name", "link"},
 		"properties": bson.M{
 			"lesson_id": bson.M{
 				"bsonType": "string",

@@ -30,7 +30,7 @@ type Lesson struct {
 func CreateLessonCollection(db *mongo.Database) {
 	jsonSchema := bson.M{
 		"bsonType": "object",
-		"required": []string{"module_id"},
+		"required": []string{"module_id", "title", "description"},
 		"properties": bson.M{
 			"module_id": bson.M{
 				"bsonType": "string",

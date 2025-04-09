@@ -23,7 +23,7 @@ type JobType string
 const (
 	FullTime   JobType = "fulltime"
 	PartTime   JobType = "parttime"
-	Internship JobType = "intership"
+	Internship JobType = "internship"
 )
 
 type Job struct {
@@ -42,7 +42,7 @@ type Job struct {
 func CreateJobCollection(db *mongo.Database) {
 	jsonSchema := bson.M{
 		"bsonType": "object",
-		"required": []string{},
+		"required": []string{"owner", "title", "description", "work_mode", "job_type", "posted_at"},
 		"properties": bson.M{
 			"owner": bson.M{
 				"bsonType": "string",
@@ -86,5 +86,5 @@ func CreateJobCollection(db *mongo.Database) {
 		log.Fatal("Error creating Job Collection: ", err)
 		return
 	}
-	log.Printf("Job Collection Created Successfully")
+	log.Printf("Job Collection Exists/Created Successfully")
 }

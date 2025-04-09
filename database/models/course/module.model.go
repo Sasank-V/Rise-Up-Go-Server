@@ -18,7 +18,7 @@ type Module struct {
 func CreateModuleCollection(db *mongo.Database) {
 	jsonSchema := bson.M{
 		"bsonType": "object",
-		"required": []string{"course_id"},
+		"required": []string{"course_id", "title"},
 		"properties": bson.M{
 			"course_id": bson.M{
 				"bsonType": "string",
