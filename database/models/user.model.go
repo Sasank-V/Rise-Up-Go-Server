@@ -18,12 +18,15 @@ const (
 )
 
 type User struct {
-	GoogleID string `bson:"google_id" json:"google_id"`
-	Name     string `bson:"name" json:"name"`
-	Email    string `bson:"email" json:"email"`
-	Picture  string `bson:"picture" json:"picture"`
-	Role     string `bson:"role" json:"role"`
-	RoleID   string `bson:"role_id" json:"role_id"`
+	GoogleID string   `bson:"google_id" json:"google_id"`
+	Name     string   `bson:"name" json:"name"`
+	Email    string   `bson:"email" json:"email"`
+	Picture  string   `bson:"picture" json:"picture"`
+	Bio      string   `bson:"bio" json:"bio"`
+	Location string   `bson:"location" json:"location"`
+	Role     string   `bson:"role" json:"role"`
+	RoleID   string   `bson:"role_id" json:"role_id"`
+	Reviews  []string `bson:"reviews" json:"reviews"`
 }
 
 func CreateUserCollection(db *mongo.Database) {
@@ -41,6 +44,12 @@ func CreateUserCollection(db *mongo.Database) {
 				"bsonType": "string",
 			},
 			"picture": bson.M{
+				"bsonType": "string",
+			},
+			"bio": bson.M{
+				"bsonType": "string",
+			},
+			"location": bson.M{
 				"bsonType": "string",
 			},
 			"role": bson.M{

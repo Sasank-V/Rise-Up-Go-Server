@@ -11,6 +11,10 @@ import (
 
 type Learner struct {
 	UserID             string   `bson:"user_id" json:"user_id"`
+	Skills             string   `bson:"skills" json:"skills"`
+	Interests          string   `bson:"interests" json:"interests"`
+	JobPreferences     []string `bson:"job_prefrences" json:"job_preferences"`
+	LanguagePreferred  string   `bson:"language_preferred" json:"language_preferred"`
 	EnrolledCourses    []string `bson:"enrolled_courses" json:"enrolled_courses"`
 	AppliedJobs        []string `bson:"applied_jobs" json:"applied_jobs"`
 	TestsTaken         []string `bson:"tests_taken" json:"tests_taken"`
