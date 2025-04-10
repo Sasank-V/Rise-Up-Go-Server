@@ -18,14 +18,17 @@ const (
 )
 
 type User struct {
-	GoogleID string `bson:"google_id" json:"google_id"`
-	Name     string `bson:"name" json:"name"`
-	Email    string `bson:"email" json:"email"`
-	Picture  string `bson:"picture" json:"picture"`
-	Bio      string `bson:"bio" json:"bio"`
-	Location string `bson:"location" json:"location"`
-	Role     string `bson:"role" json:"role"`
-	RoleID   string `bson:"role_id" json:"role_id"`
+	GoogleID     string `bson:"google_id" json:"google_id"`
+	Name         string `bson:"name" json:"name"`
+	Email        string `bson:"email" json:"email"`
+	Picture      string `bson:"picture" json:"picture"`
+	Bio          string `bson:"bio" json:"bio"`
+	Location     string `bson:"location" json:"location"`
+	Role         string `bson:"role" json:"role"`
+	RoleID       string `bson:"role_id" json:"role_id"`
+	AccessToken  string `bson:"access_token" json:"access_token"`
+	RefreshToken string `bson:"refresh_token" json:"refresh_token"`
+	ExpiresAt    string `bson:"expires_at" json:"expires_at"`
 }
 
 func CreateUserCollection(db *mongo.Database) {
@@ -56,6 +59,15 @@ func CreateUserCollection(db *mongo.Database) {
 				"enum":     []string{string(LearnerRole), string(MentorRole), string(OrganisationRole)},
 			},
 			"role_id": bson.M{
+				"bsonType": "string",
+			},
+			"access_token": bson.M{
+				"bsonType": "string",
+			},
+			"refresh_token": bson.M{
+				"bsonType": "string",
+			},
+			"expires_at": bson.M{
 				"bsonType": "string",
 			},
 		},

@@ -1,4 +1,4 @@
-package models
+package job
 
 import (
 	"log"

@@ -1,4 +1,4 @@
-package models
+package job
 
 import (
 	"log"
@@ -24,7 +24,7 @@ type JobApplication struct {
 	MatchPercentage int               `bson:"match_percentage" json:"match_percentage"`
 }
 
-func CreateJobApplication(db *mongo.Database) {
+func CreateJobApplicationCollection(db *mongo.Database) {
 	jsonSchema := bson.M{
 		"bsonType": "object",
 		"required": []string{"user_id", "job_id", "status", "match_percentage"},
