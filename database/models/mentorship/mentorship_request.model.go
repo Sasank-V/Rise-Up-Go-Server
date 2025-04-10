@@ -11,12 +11,13 @@ import (
 )
 
 type MentorshipRequest struct {
-	From     string    `bson:"from" json:"from"`
-	To       string    `bson:"to" json:"to"`
-	Date     time.Time `bson:"date" json:"date"`
-	Time     time.Time `bson:"time" json:"time"`
-	Duration int       `bson:"duration" json:"duration"`
-	Note     string    `bson:"note" json:"note"`
+	From     string      `bson:"from" json:"from"`
+	To       string      `bson:"to" json:"to"`
+	Date     time.Time   `bson:"date" json:"date"`
+	Time     time.Time   `bson:"time" json:"time"`
+	Duration int         `bson:"duration" json:"duration"`
+	Type     SessionType `bson:"type" json:"type"`
+	Note     string      `bson:"note" json:"note"`
 }
 
 func CreateMentorShipRequestCollection(db *mongo.Database) {
@@ -39,12 +40,16 @@ func CreateMentorShipRequestCollection(db *mongo.Database) {
 			"duration": bson.M{
 				"bsonType": "int",
 			},
+			"type": bson.M{
+				"bsonType": "string",
+				"enum":     []string{string(Private), string(Public)},
+			},
 			"note": bson.M{
 				"bsonType": "string",
 			},
 		},
 	}
-	err := database.CreateCollection(db, lib.MentorShipRequestCollection, jsonSchema, []string{})
+	err := database.CreateCollection(db, lib.MentorShipRequestCollectionName, jsonSchema, []string{})
 	if err != nil {
 		log.Fatal("Error Creating MentorShip Request Collection: ", err)
 		return

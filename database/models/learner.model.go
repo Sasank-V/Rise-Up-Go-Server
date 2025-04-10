@@ -13,14 +13,16 @@ type Learner struct {
 	UserID             string   `bson:"user_id" json:"user_id"`
 	Skills             []string `bson:"skills" json:"skills"`
 	Interests          []string `bson:"interests" json:"interests"`
-	JobPreferences     []string `bson:"job_preferences" json:"job_preferences"`
+	JobPreferences     []string `bson:"job_preferences" json:"job_preferences"` //Later
 	LanguagePreferred  string   `bson:"language_preferred" json:"language_preferred"`
 	Education          []string `bson:"education" json:"education"`
 	ProfileCompletion  int      `bson:"profile_completion" json:"profile_completion"`
 	EnrolledCourses    []string `bson:"enrolled_courses" json:"enrolled_courses"`
 	AppliedJobs        []string `bson:"applied_jobs" json:"applied_jobs"`
 	TestsTaken         []string `bson:"tests_taken" json:"tests_taken"`
+	MentorshipRequests []string `bson:"mentorship_requests" json:"mentorship_requests"`
 	MentorshipSessions []string `bson:"mentorship_sessions" json:"mentorship_sessions"`
+	Reviews            []string `bson:"reviews" json:"reviews"`
 }
 
 func CreateLearnerCollection(db *mongo.Database) {
@@ -62,7 +64,15 @@ func CreateLearnerCollection(db *mongo.Database) {
 				"bsonType": "array",
 				"items":    bson.M{"bsonType": "string"},
 			},
+			"mentorship_requests": bson.M{
+				"bsonType": "array",
+				"items":    bson.M{"bsonType": "string"},
+			},
 			"mentorship_sessions": bson.M{
+				"bsonType": "array",
+				"items":    bson.M{"bsonType": "string"},
+			},
+			"reviews": bson.M{
 				"bsonType": "array",
 				"items":    bson.M{"bsonType": "string"},
 			},

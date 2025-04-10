@@ -11,11 +11,14 @@ import (
 
 type Mentor struct {
 	UserID             string   `bson:"user_id" json:"user_id"`
+	Skills             []string `bson:"skills" json:"skills"`
+	Experience         []string `bson:"experience" json:"experience"`
 	RegisteredCourses  []string `bson:"registered_courses" json:"registered_courses"`
 	MentorshipRequests []string `bson:"mentorship_requests" json:"mentorship_requests"`
 	MentorShipSessions []string `bson:"mentorship_sessions" json:"mentorship_sessions"`
 	TestsTaken         []string `bson:"tests_taken" json:"tests_taken"`
 	Reviews            []string `bson:"reviews" json:"reviews"`
+	Available          bool     `bson:"available" json:"available"`
 }
 
 func CreateMentorCollection(db *mongo.Database) {
@@ -55,6 +58,9 @@ func CreateMentorCollection(db *mongo.Database) {
 				"items": bson.M{
 					"bsonType": "string",
 				},
+			},
+			"available": bson.M{
+				"bsonType": "bool",
 			},
 		},
 	}
