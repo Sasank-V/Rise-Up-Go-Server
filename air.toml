@@ -5,6 +5,27 @@ testdata_dir = "testdata"
 tmp_dir = "tmp"
 
 [build]
+include_dir = [
+    "internal/api/auth",
+    "internal/api/course",
+    "internal/api/job",
+    "internal/api/mentorship",
+    "internal/api/test",
+    "internal/api/user",
+    "internal/config",
+    "internal/core/course",
+    "internal/core/job",
+    "internal/core/mentorship",
+    "internal/core/test",
+    "internal/core/user",
+    "internal/database",
+    "internal/lib",
+    "internal/middleware",
+    "internal/types",
+    "internal/utils",
+    "pkg",
+]
+include_ext = ["go", "tpl", "tmpl", "html", "env"]
 args_bin = []
 bin = "tmp/main.exe"
 cmd = "go build -o ./tmp/main.exe ./main.go"
@@ -15,9 +36,7 @@ exclude_regex = ["_test.go"]
 exclude_unchanged = false
 follow_symlink = false
 full_bin = ""
-include_dir = ["api", "database", "lib", "routes", "services"]
-include_ext = ["go", "tpl", "tmpl", "html"]
-include_file = ["**/*.go"]
+include_file = ["*.go", ".env"]
 kill_delay = "0s"
 log = "tmp/build-errors.log"
 poll = false
@@ -35,20 +54,3 @@ build = "yellow"
 main = "magenta"
 runner = "green"
 watcher = "cyan"
-
-[log]
-main_only = false
-silent = false
-time = false
-
-[misc]
-clean_on_exit = false
-
-[proxy]
-app_port = 0
-enabled = false
-proxy_port = 0
-
-[screen]
-clear_on_rebuild = false
-keep_scroll = true
