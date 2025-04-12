@@ -28,7 +28,7 @@ import (
 func CreateAllCollections() {
 	db := database.InitDB()
 	user_core.ConnectAllUserCollections()
-	course_core.CreateAllCourseCollections(db)
+	course_core.ConnectAllCourseCollections()
 	job_core.CreateAllJobCollections(db)
 	test_core.CreateAllTestCollections(db)
 	mentorship_core.CreateAllMentorshipCollections(db)

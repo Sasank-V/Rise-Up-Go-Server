@@ -45,6 +45,26 @@ func UserExists(googleID string) (bool, error) {
 	}
 }
 
+func CheckUserRole(userID string, role string) (bool, error) {
+	ctx, cancel := database.GetContext()
+	defer cancel()
+
+	var user User
+	res := UserColl.FindOne(ctx, bson.M{
+		"_id": userID,
+	})
+	if res.Err() == mongo.ErrNoDocuments {
+		return false, fmt.Errorf("no User found with the given ID")
+	} else if res.Err() != nil {
+		return false, res.Err()
+	}
+	res.Decode(&user)
+	if strings.Compare(user.Role, role) != 0 {
+		return false, nil
+	}
+	return true, nil
+}
+
 func AddUser(info types.SigninRequest) error {
 	user := User{
 		ID:           info.GoogleID,

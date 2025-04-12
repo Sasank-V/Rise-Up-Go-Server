@@ -15,6 +15,62 @@ const (
 	Advanced     Difficulty = "advanced"
 )
 
+func CreateCourseCollection(db *mongo.Database) {
+	jsonSchema := bson.M{
+		"bsonType": "object",
+		"required": []string{"owner", "banner", "title", "difficulty", "description", "duration"},
+		"properties": bson.M{
+			"owner": bson.M{
+				"bsonType": "string",
+			},
+			"banner": bson.M{
+				"bsonType": "string",
+			},
+			"title": bson.M{
+				"bsonType": "string",
+			},
+			"description": bson.M{
+				"bsonType": "string",
+			},
+			"difficulty": bson.M{
+				"bsonType": "string",
+			},
+			"duration": bson.M{
+				"bsonType": "int",
+			},
+			"skills": bson.M{
+				"bsonType": "array",
+				"items": bson.M{
+					"bsonType": "string",
+				},
+			},
+			"modules": bson.M{
+				"bsonType": "array",
+				"items": bson.M{
+					"bsonType": "string",
+				},
+			},
+			"instructors": bson.M{
+				"bsonType": "array",
+				"items": bson.M{
+					"bsonType": "string",
+				},
+			},
+			"discussions": bson.M{
+				"bsonType": "array",
+				"items": bson.M{
+					"bsonType": "string",
+				},
+			},
+		},
+	}
+	err := database.CreateCollection(db, lib.CourseCollectionName, jsonSchema, []string{})
+	if err != nil {
+		log.Fatal("Error Creating Course Collection: ", err)
+		return
+	}
+	log.Print("Course Collection Exists/Created Successfully")
+}
 
 const (
 	Video    ContentType = "video"
@@ -52,6 +108,9 @@ func CreateLessonCollection(db *mongo.Database) {
 			"duration": bson.M{
 				"bsonType": "int",
 			},
+			"order_no": bson.M{
+				"bsonType": "int",
+			},
 		},
 	}
 	err := database.CreateCollection(db, lib.LessonCollectionName, jsonSchema, []string{})
@@ -72,6 +131,9 @@ func CreateModuleCollection(db *mongo.Database) {
 			},
 			"title": bson.M{
 				"bsonType": "string",
+			},
+			"order_no": bson.M{
+				"bsonType": "int",
 			},
 			"lessons": bson.M{
 				"bsonType": "array",
@@ -143,10 +205,10 @@ func CreateCourseProgressCollection(db *mongo.Database) {
 	log.Println("Course Progress Collection Exists/Created Successfully")
 }
 
-func CreateAllCourseCollections(db *mongo.Database) {
-	CreateCourseCollection(db)
-	CreateCourseProgressCollection(db)
-	CreateLessonCollection(db)
-	CreateModuleCollection(db)
-	CreateResourceCollection(db)
+func ConnectAllCourseCollections() {
+	ConnectCourseCollection()
+	ConnectModuleCollection()
+	ConnectLessonCollection()
+	ConnectResourceCollection()
+	ConnectCourseProgressCollection()
 }
