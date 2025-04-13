@@ -4,6 +4,7 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/Sasank-V/Rise-Up-Go-Server/internal/core/user"
 	"github.com/Sasank-V/Rise-Up-Go-Server/internal/database"
 	"github.com/Sasank-V/Rise-Up-Go-Server/internal/lib"
 	"github.com/Sasank-V/Rise-Up-Go-Server/internal/types"
@@ -11,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var CourseColl *mongo.Collection
@@ -41,6 +43,150 @@ func CheckCourseExists(courseID string) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func GetAllCourses(page int64) ([]types.AllCourseItem, int64, error) {
+	ctx, cancel := database.GetContext()
+	defer cancel()
+
+	const pageSize int64 = 20
+	skip := (page - 1) * pageSize
+
+	total, err := CourseColl.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	opts := options.Find().SetSkip(skip).SetLimit(pageSize)
+
+	cursor, err := CourseColl.Find(ctx, bson.M{}, opts)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(ctx)
+
+	var courses []Course
+	if err = cursor.All(ctx, &courses); err != nil {
+		return nil, 0, err
+	}
+
+	var allCourses []types.AllCourseItem
+	for _, course := range courses {
+		item := types.AllCourseItem{
+			ID:          course.ID,
+			Owner:       course.Owner,
+			Banner:      course.Banner,
+			Title:       course.Title,
+			Description: course.Description,
+			Difficulty:  string(course.Difficulty),
+			Duration:    course.Duration,
+			Skills:      course.Skills,
+		}
+
+		allCourses = append(allCourses, item)
+	}
+
+	return allCourses, total, nil
+
+}
+
+func GetCoursewithID(courseID string) (types.FullCourse, error) {
+	ctx, cancel := database.GetContext()
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(courseID)
+	if err != nil {
+		return types.FullCourse{}, err
+	}
+
+	res := CourseColl.FindOne(ctx, bson.M{"_id": objID})
+	if res.Err() != nil {
+		return types.FullCourse{}, res.Err()
+	}
+
+	var course Course
+	err = res.Decode(&course)
+	if err != nil {
+		return types.FullCourse{}, err
+	}
+
+	var fullCourse types.FullCourse
+	fullCourse.ID = course.ID
+	fullCourse.Banner = course.Banner
+	fullCourse.Title = course.Title
+	fullCourse.Description = course.Description
+	fullCourse.Difficulty = string(course.Difficulty)
+	fullCourse.Duration = course.Duration
+	fullCourse.Skills = course.Skills
+	fullCourse.Prerequisites = course.Prerequisites
+	fullCourse.Outcomes = course.Outcomes
+
+	var wg sync.WaitGroup
+	var moduleErr, ownerErr, instructorErr error
+	moduleChan := make(chan types.FullModule, len(course.Modules))
+	instructorChan := make(chan types.BasicUserInfo, len(course.Instructors))
+	var ownerInfo types.BasicUserInfo
+
+	for _, moduleID := range course.Modules {
+		wg.Add(1)
+		go func(id string) {
+			defer wg.Done()
+			module, err := GetModuleWithID(id)
+			if err != nil {
+				moduleErr = err
+				return
+			}
+			moduleChan <- module
+		}(moduleID)
+	}
+
+	for _, instructorID := range course.Instructors {
+		wg.Add(1)
+		go func(id string) {
+			defer wg.Done()
+			instructor, err := user.GetBasicUserInfo(id)
+			if err != nil {
+				instructorErr = err
+				return
+			}
+			instructorChan <- instructor
+		}(instructorID)
+	}
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		info, err := user.GetBasicUserInfo(course.Owner)
+		if err != nil {
+			ownerErr = err
+			return
+		}
+		ownerInfo = info
+	}()
+
+	wg.Wait()
+	close(moduleChan)
+	close(instructorChan)
+
+	if moduleErr != nil {
+		return types.FullCourse{}, moduleErr
+	}
+	if instructorErr != nil {
+		return types.FullCourse{}, instructorErr
+	}
+	if ownerErr != nil {
+		return types.FullCourse{}, ownerErr
+	}
+
+	for m := range moduleChan {
+		fullCourse.Modules = append(fullCourse.Modules, m)
+	}
+	for i := range instructorChan {
+		fullCourse.Instructors = append(fullCourse.Instructors, i)
+	}
+	fullCourse.Owner = ownerInfo
+
+	return fullCourse, nil
 }
 
 func AddCourse(info types.CreateCourseRequest) error {

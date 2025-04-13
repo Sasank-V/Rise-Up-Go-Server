@@ -4,12 +4,65 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/Sasank-V/Rise-Up-Go-Server/internal/core/course"
 	"github.com/Sasank-V/Rise-Up-Go-Server/internal/core/user"
 	"github.com/Sasank-V/Rise-Up-Go-Server/internal/types"
 	"github.com/gin-gonic/gin"
 )
+
+func getAllCoursesHandler(c *gin.Context) {
+	pageID := c.Param("page")
+	id, err := strconv.ParseInt(pageID, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, types.MessageResponse{
+			Message: fmt.Sprintf("Error parsing the pageId to int: %v", err),
+		})
+		return
+	}
+	courses, totalCount, err := course.GetAllCourses(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, types.MessageResponse{
+			Message: fmt.Sprintf("Error getting all the courses: %v", err),
+		})
+		return
+	}
+	c.JSON(http.StatusAccepted, types.AllCoursesResponse{
+		Page:       id,
+		PageSize:   20,
+		TotalCount: totalCount,
+		Courses:    courses,
+	})
+
+}
+
+func getCourseHandler(c *gin.Context) {
+	courseID := c.Param("id")
+	exists, err := course.CheckCourseExists(courseID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, types.MessageResponse{
+			Message: fmt.Sprintf("Error checking the course: %v", err),
+		})
+		return
+	}
+	if !exists {
+		c.JSON(http.StatusNotFound, types.MessageResponse{
+			Message: "No course found with the given ID",
+		})
+		return
+	}
+
+	course, err := course.GetCoursewithID(courseID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, types.MessageResponse{
+			Message: fmt.Sprintf("Error fetching course: %v", err),
+		})
+		return
+	}
+
+	c.JSON(http.StatusAccepted, course)
+}
 
 func createCourseHandler(c *gin.Context) {
 	var info types.CreateCourseRequest

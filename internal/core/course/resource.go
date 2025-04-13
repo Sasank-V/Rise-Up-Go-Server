@@ -44,6 +44,29 @@ func CheckResourceExists(resourceID string) (bool, error) {
 	return true, nil
 }
 
+func GetResourceWithID(resourceID string) (Resource, error) {
+	ctx, cancel := database.GetContext()
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(resourceID)
+	if err != nil {
+		return Resource{}, err
+	}
+
+	res := ResourceColl.FindOne(ctx, bson.M{"_id": objID})
+	if res.Err() != nil {
+		return Resource{}, res.Err()
+	}
+
+	var resource Resource
+	err = res.Decode(&resource)
+	if err != nil {
+		return Resource{}, err
+	}
+
+	return resource, nil
+}
+
 func AddResource(info types.CreateResource, lessonID string) (string, error) {
 	ctx, cancel := database.GetContext()
 	defer cancel()

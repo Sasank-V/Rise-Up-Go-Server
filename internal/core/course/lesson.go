@@ -46,6 +46,75 @@ func CheckLessonExists(lessonID string) (bool, error) {
 	return true, nil
 }
 
+func GetLessonWithID(lessonID string) (types.FullLesson, error) {
+	ctx, cancel := database.GetContext()
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(lessonID)
+	if err != nil {
+		return types.FullLesson{}, err
+	}
+
+	res := LessonColl.FindOne(ctx, bson.M{"_id": objID})
+	if res.Err() != nil {
+		return types.FullLesson{}, res.Err()
+	}
+
+	var lesson Lesson
+	err = res.Decode(&lesson)
+	if err != nil {
+		return types.FullLesson{}, err
+	}
+
+	var wg sync.WaitGroup
+	var resourceErr error
+	resourceChan := make(chan Resource, len(lesson.Resources))
+
+	for _, resourceID := range lesson.Resources {
+		wg.Add(1)
+		go func(id string) {
+			defer wg.Done()
+			resource, err := GetResourceWithID(id)
+			if err != nil {
+				resourceErr = err
+				return
+			}
+			resourceChan <- resource
+		}(resourceID)
+	}
+
+	wg.Wait()
+	close(resourceChan)
+
+	if resourceErr != nil {
+		return types.FullLesson{}, resourceErr
+	}
+
+	fullLesson := types.FullLesson{
+		ID:          lessonID,
+		ModuleID:    lesson.ModuleID,
+		Title:       lesson.Title,
+		Description: lesson.Description,
+		ContentLink: lesson.ContentLink,
+		ContentType: string(lesson.ContentType),
+		Duration:    lesson.Duration,
+		OrderNo:     lesson.OrderNo,
+	}
+	fullLesson.ID = lessonID
+
+	for r := range resourceChan {
+		resc := types.Resource{
+			ID:       r.ID,
+			LessonID: r.LessonID,
+			Name:     r.Name,
+			Link:     r.Link,
+		}
+		fullLesson.Resources = append(fullLesson.Resources, resc)
+	}
+
+	return fullLesson, nil
+}
+
 func AddLesson(info types.CreateLesson, moduleID string) (string, error) {
 	ctx, cancel := database.GetContext()
 	defer cancel()

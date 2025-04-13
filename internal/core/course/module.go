@@ -44,6 +44,64 @@ func CheckModuleExists(moduleID string) (bool, error) {
 	return true, nil
 }
 
+func GetModuleWithID(moduleID string) (types.FullModule, error) {
+	ctx, cancel := database.GetContext()
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(moduleID)
+	if err != nil {
+		return types.FullModule{}, err
+	}
+
+	res := ModuleColl.FindOne(ctx, bson.M{"_id": objID})
+	if res.Err() != nil {
+		return types.FullModule{}, res.Err()
+	}
+
+	var module Module
+	err = res.Decode(&module)
+	if err != nil {
+		return types.FullModule{}, err
+	}
+
+	var wg sync.WaitGroup
+	var lessonErr error
+	lessonChan := make(chan types.FullLesson, len(module.Lessons))
+
+	for _, lessonID := range module.Lessons {
+		wg.Add(1)
+		go func(id string) {
+			defer wg.Done()
+			lesson, err := GetLessonWithID(id)
+			if err != nil {
+				lessonErr = err
+				return
+			}
+			lessonChan <- lesson
+		}(lessonID)
+	}
+
+	wg.Wait()
+	close(lessonChan)
+
+	if lessonErr != nil {
+		return types.FullModule{}, lessonErr
+	}
+
+	fullModule := types.FullModule{
+		ID:       moduleID,
+		CourseID: module.CourseID,
+		Title:    module.Title,
+		OrderNo:  module.OrderNo,
+	}
+
+	for l := range lessonChan {
+		fullModule.Lessons = append(fullModule.Lessons, l)
+	}
+
+	return fullModule, nil
+}
+
 func AddModule(info types.CreateModule, courseId string) (string, error) {
 	ctx, cancel := database.GetContext()
 	defer cancel()

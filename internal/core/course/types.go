@@ -4,6 +4,7 @@ type ContentType string
 type Difficulty string
 
 type Course struct {
+	ID            string     `json:"id" bson:"_id,omitempty"`
 	Owner         string     `bson:"owner" json:"owner"`
 	Banner        string     `bson:"banner" json:"banner"`
 	Title         string     `bson:"title" json:"title"`
@@ -19,6 +20,7 @@ type Course struct {
 }
 
 type Module struct {
+	ID       string   `bson:"_id,omitempty" json:"id"`
 	CourseID string   `bson:"course_id" json:"title_id"`
 	Title    string   `bson:"title" json:"title"`
 	OrderNo  int      `bson:"order_no" json:"order_no"`
@@ -37,6 +39,7 @@ type Lesson struct {
 }
 
 type Resource struct {
+	ID       string `bson:"_id,omitempty" json:"id"`
 	LessonID string `bson:"lesson_id" json:"lesson_id"`
 	Name     string `bson:"name" json:"name"`
 	Link     string `bson:"link" json:"link"`
