@@ -124,8 +124,8 @@ func GetCoursewithID(courseID string) (types.FullCourse, error) {
 	var wg sync.WaitGroup
 	var moduleErr, ownerErr, instructorErr error
 	moduleChan := make(chan types.FullModule, len(course.Modules))
-	instructorChan := make(chan types.BasicUserInfo, len(course.Instructors))
-	var ownerInfo types.BasicUserInfo
+	instructorChan := make(chan user.User, len(course.Instructors))
+	var ownerInfo user.User
 
 	for _, moduleID := range course.Modules {
 		wg.Add(1)
@@ -182,9 +182,17 @@ func GetCoursewithID(courseID string) (types.FullCourse, error) {
 		fullCourse.Modules = append(fullCourse.Modules, m)
 	}
 	for i := range instructorChan {
-		fullCourse.Instructors = append(fullCourse.Instructors, i)
+		fullCourse.Instructors = append(fullCourse.Instructors, types.BasicUserInfo{
+			UserID:  i.ID,
+			Name:    i.Name,
+			Picture: i.Picture,
+		})
 	}
-	fullCourse.Owner = ownerInfo
+	fullCourse.Owner = types.BasicUserInfo{
+		UserID:  ownerInfo.ID,
+		Name:    ownerInfo.Name,
+		Picture: ownerInfo.Picture,
+	}
 
 	return fullCourse, nil
 }
@@ -260,8 +268,8 @@ func AddCourse(info types.CreateCourseRequest) error {
 	if err != nil {
 		return err
 	}
-	// log.Println("Course Created: ", info.Title)
-	return nil
+	err = user.AddCourseToOrganisation(info.UserID, id)
+	return err
 }
 
 func UpdateCourse(info types.UpdateCourseRequest) error {

@@ -58,6 +58,15 @@ func CreateJobCollection(db *mongo.Database) {
 			"salary_range_end": bson.M{
 				"bsonType": "long",
 			},
+			"evaluation_criteria": bson.M{
+				"bsonType": "string",
+			},
+			"active": bson.M{
+				"bsonType": "bool",
+			},
+			"contact": bson.M{
+				"bsonType": "string",
+			},
 			"posted_at": bson.M{
 				"bsonType": "date",
 			},
@@ -92,6 +101,9 @@ func CreateJobApplicationCollection(db *mongo.Database) {
 				"bsonType": "string",
 				"enum":     []string{string(Accepted), string(Rejected), string(Pending)},
 			},
+			"test_result": bson.M{
+				"bsonType": "string",
+			},
 			"match_percentage": bson.M{
 				"bsonType": "int",
 				"minimum":  0,
@@ -109,7 +121,7 @@ func CreateJobApplicationCollection(db *mongo.Database) {
 
 }
 
-func CreateAllJobCollections(db *mongo.Database) {
-	CreateJobCollection(db)
-	CreateJobApplicationCollection(db)
+func ConnectAllJobCollections() {
+	ConnectJobApplicationCollection()
+	ConnectJobCollection()
 }

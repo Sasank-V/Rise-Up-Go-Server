@@ -65,7 +65,7 @@ func CheckUserRole(userID string, role string) (bool, error) {
 	return true, nil
 }
 
-func GetBasicUserInfo(userID string) (types.BasicUserInfo, error) {
+func GetBasicUserInfo(userID string) (User, error) {
 	ctx, cancel := database.GetContext()
 	defer cancel()
 	filter := bson.M{"_id": userID}
@@ -73,14 +73,10 @@ func GetBasicUserInfo(userID string) (types.BasicUserInfo, error) {
 	var user User
 	err := UserColl.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
-		return types.BasicUserInfo{}, err
+		return User{}, err
 	}
 
-	return types.BasicUserInfo{
-		UserID:  user.ID,
-		Name:    user.Name,
-		Picture: user.Picture,
-	}, nil
+	return user, nil
 }
 
 func AddUser(info types.SigninRequest) error {

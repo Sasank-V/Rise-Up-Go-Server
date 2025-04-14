@@ -48,8 +48,6 @@ type Mentor struct {
 
 type Organisation struct {
 	UserID             string   `bson:"user_id" json:"user_id"`
-	OrganisationName   string   `bson:"organisation_name" json:"organisation_name"`
-	About              string   `bson:"about" json:"about"`
 	Website            string   `bson:"website" json:"website"`
 	JobsPosted         []string `bson:"jobs_posted" json:"jobs_posted"`
 	CoursesPosted      []string `bson:"courses_posted" json:"course_posted"`

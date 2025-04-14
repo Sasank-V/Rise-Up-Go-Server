@@ -136,12 +136,6 @@ func CreateOrganisationCollection(db *mongo.Database) {
 			"user_id": bson.M{
 				"bsonType": "string",
 			},
-			"organisation_name": bson.M{
-				"bsonType": "string",
-			},
-			"about": bson.M{
-				"bsonType": "string",
-			},
 			"website": bson.M{
 				"bsonType": "string",
 			},

@@ -29,7 +29,7 @@ func CreateAllCollections() {
 	db := database.InitDB()
 	user_core.ConnectAllUserCollections()
 	course_core.ConnectAllCourseCollections()
-	job_core.CreateAllJobCollections(db)
+	job_core.ConnectAllJobCollections()
 	test_core.CreateAllTestCollections(db)
 	mentorship_core.CreateAllMentorshipCollections(db)
 }
